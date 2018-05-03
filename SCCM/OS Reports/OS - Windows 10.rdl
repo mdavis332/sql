@@ -111,9 +111,17 @@ where A.Build01 LIKE '10.%' AND A.ResourceID in (select ResourceID from dbo.v_Fu
     <DataSet Name="Version">
       <Query>
         <DataSourceName>Configmgr</DataSourceName>
-        <CommandText>select B.Build,c.Value from vSMS_WindowsServicingStates B
+        <CommandText>select B.Build, "Value" = 
+	CASE
+		WHEN c.Value = 'Insider Preview' THEN 'Insider Preview' + B.Build
+		ELSE c.Value
+	END 
+
+from vSMS_WindowsServicingStates B
 LEFT OUTER JOIN vSMS_WindowsServicingLocalizedNames C on B.Name = C.Name
-where Branch = 0</CommandText>
+where Branch = 0
+AND c.Value != 'Insider Preview' --remove this line if you want to see Insider Preview builds</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="Build">
